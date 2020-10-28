@@ -5,7 +5,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
@@ -14,6 +17,8 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -24,24 +29,28 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    private static final String TAG = "MainActivity";
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private Handler myHandler = new Handler();
     private SeekBar seekBar;
     private TextView timeTextView;
+    private MediaService.MyBinder mMyBinder;
     private SimpleDateFormat time = new SimpleDateFormat("m:ss");
     private int i = 0;
-    File file = Environment.getExternalStorageDirectory();//SD卡根目录
+    Intent MediaServiceIntent;//“绑定”服务的intent
     //歌曲路径
     private String[] musicPath = new String[]{
-            file + "TestMusic/Jony J - 顽家.mp3",
-            file + "TestMusic/沙一汀EL - 所以你睡了没.mp3",
-            file + "TestMusic/法老 - 百变酒精.mp3",
-            file + "TestMusic/落日飞车 - 我是一只鱼.mp3"
+            "/sdcard/TestMusic/Jony J - 顽家.mp3",
+            "/sdcard/TestMusic/沙一汀EL - 所以你睡了没.mp3",
+            "/sdcard/TestMusic/法老 - 百变酒精.mp3",
+            "/sdcard/TestMusic/落日飞车 - 我是一只鱼.mp3"
     };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         Button play = findViewById(R.id.play);//播放
         Button pause = findViewById(R.id.pause);//暂停
         Button nextMusic = findViewById(R.id.next);//下一首
@@ -67,7 +76,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         myHandler.post(updateUI);
     }
+    //服务与活动的纽带ServiceConnection
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mMyBinder = (MediaService.MyBinder) service;
+            Log.d(TAG, "Service与Activity已连接");
+        }
 
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
     private void initMediaPlayer(int musicIndex) {
         try{
             mediaPlayer.setDataSource(musicPath[musicIndex]);//指定音乐文件的路径
