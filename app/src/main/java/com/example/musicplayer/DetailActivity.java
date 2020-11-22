@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.MediaPlayer;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -22,8 +23,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity implements View.OnClickListener {
-    private Button btn_pre, btn_play, btn_next,btn_return;
-    private TextView tv_cur_time, tv_total_time;
+
+    public  boolean mode=false;//0表示顺序播放  1表示随机播放
+    public static int way=0;
+    private Button btn_pre, btn_play, btn_next,btn_return,btn_shunxu,random;
+    private TextView tv_cur_time, tv_total_time,songname;
     private SeekBar seekBar;
 
     //seekBar是否被拖动
@@ -32,10 +36,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == 0x01) {
+            if (msg.what == 0x01) {//调用handler.sendEmptyMessage(0x01)，也就是一播放音乐就开启调用
                 tv_cur_time.setText("00:00");
                 tv_cur_time.setText(formatTime(musicService.getCurrent()));
                 tv_total_time.setText(formatTime(musicService.getTime()));
+                songname.setText(musicService.getName().toString());
                 seekBar.setProgress(musicService.getCurrent());
                 seekBar.setMax(musicService.getTime());
                 seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -59,6 +64,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
     };
+
+
 
     @Override
     protected void onDestroy() {
@@ -94,9 +101,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     };
 
-    /**
-     * 按钮点击事件
-     */
+
+     // 按钮点击事件
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -105,6 +112,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.btn_play:
                 musicService.play();
+                updateBtnPlayOrPause();
                 break;
             case R.id.btn_next:
                 musicService.next(1);
@@ -112,8 +120,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.btn_return:
                 onBackPressed();
                 break;
+            case R.id.
         }
-        updateBtnPlayOrPause();
+
+
     }
 
     private void updateBtnPlayOrPause() {
@@ -124,6 +134,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+
     private void initView() {
         btn_pre = findViewById(R.id.btn_pre);
         btn_play = findViewById(R.id.btn_play);
@@ -131,11 +142,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         btn_return = findViewById(R.id.btn_return);
         tv_cur_time = findViewById(R.id.tv_cur_time);
         tv_total_time = findViewById(R.id.tv_total_time);
+        songname = findViewById(R.id.songname);
         seekBar = findViewById(R.id.seekBar);
+        btn_shunxu= findViewById(R.id.shunxu);
         btn_pre.setOnClickListener(this);
         btn_play.setOnClickListener(this);
         btn_next.setOnClickListener(this);
         btn_return.setOnClickListener(this);
+        btn_shunxu.setOnClickListener(this);
     }
 
     private String formatTime(int time) {

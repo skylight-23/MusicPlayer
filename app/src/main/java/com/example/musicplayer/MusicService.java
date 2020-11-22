@@ -6,9 +6,10 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
-
+import com.example.musicplayer.DetailActivity;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MusicService extends Service {
     private int mPosition;
@@ -20,7 +21,7 @@ public class MusicService extends Service {
     private ArrayList<Music> mMusicList;
     //静态存储当前音乐是否在播放
     static boolean isPlaying;
-    public int way=0;
+
     public MusicService() {
     }
 
@@ -46,7 +47,7 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mPosition = intent.getExtras().getInt("position", -1);
+        mPosition = intent.getExtras().getInt("position", -1);//判断与之前播的是不是同一首歌
         if (mPreMediaPlayer == null || mPosition != savePosition) {
             playMusic(mPosition);
         } else {
@@ -56,9 +57,9 @@ public class MusicService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    /**
-     * 播放音乐
-     */
+
+ // 播放音乐
+
     public void playMusic(int position) {
         mMediaPlayer = new MediaPlayer();
         if (mPreMediaPlayer != null) {
@@ -78,17 +79,17 @@ public class MusicService extends Service {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                        mPosition += 1;
-                        mPosition = (mMusicList.size() + mPosition) % mMusicList.size();
-                        playMusic(mPosition);
-                        Toast.makeText(getApplicationContext(), "自动为您切换下一首：" + mMusicList.get(mPosition).getName(), Toast.LENGTH_SHORT).show();
+                mPosition += 1;
+                mPosition = (mMusicList.size() + mPosition) % mMusicList.size();
+                playMusic(mPosition);
+                Toast.makeText(getApplicationContext(), "自动为您切换下一首：" + mMusicList.get(mPosition).getName(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    /**
-     * 按钮点击：播放音乐
-     */
+
+     //按钮点击：播放音乐
+
     public void play() {
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
@@ -99,41 +100,43 @@ public class MusicService extends Service {
         }
     }
 
-    /**
-     * 按钮点击：下一首
-     */
+
+     //按钮点击：下一首
+
     public void next(int offset) {
+
         mPosition += offset;
         mPosition = (mMusicList.size() + mPosition) % mMusicList.size();
         playMusic(mPosition);
+        //mPosition就是在MainActivity中通过ListView的ItemClickListener将位置传过来。
     }
 
-    /**
-     * 获取当前音乐的名字
-     */
+     // 获取当前音乐的名字
+
     public String getName() {
         return mMusicList.get(mPosition).getName();
     }
 
-    /**
-     * 获取当前音乐的播放时间
-     */
+
+     //获取当前音乐的播放时间
+
     public int getTime() {
         return mMusicList.get(mPosition).getTime();
     }
 
-    /**
-     * 获取当前播放位置
-     */
+
+     // 获取当前播放位置
+
     public int getCurrent() {
         return mMediaPlayer.getCurrentPosition();
     }
 
-    /**
-     * 设置音乐播放的进度
-     */
+
+     // 设置音乐播放的进度
+
     public void seekTo(int progress) {
         mMediaPlayer.seekTo(progress);
     }
 }
+
 

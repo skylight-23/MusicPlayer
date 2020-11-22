@@ -3,7 +3,6 @@
     android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffb6c1"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -18,7 +17,21 @@
             android:layout_gravity="bottom"
             android:text="Back"/>
     </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center">
 
+        <TextView
+            android:id="@+id/songname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="20sp"/>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -52,7 +65,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="horizontal">
-
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/random"
+                android:text="随机"/>
             <Button
                 android:id="@+id/btn_pre"
                 android:layout_width="wrap_content"
@@ -71,6 +88,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="下一首" />
+            <Button
+                android:id="@+id/shunxu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="顺序" />
+
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
